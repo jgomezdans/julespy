@@ -22,5 +22,17 @@ def test_do_parameter_file_do_file_par_vals ():
 def test_do_parameter_file_do_file_par_list ():
     (h, p, p_list ) = do_parameter_file ( "/home/ucfajlg/JULES/JULES/jules-cvs/PARAM/standard_pft_param.dat" )
     assert len(p_list) == 42
+def test_write_parameter_file ():
+    (h, p, p_list ) = do_parameter_file ( "/home/ucfajlg/JULES/JULES/jules-cvs/PARAM/standard_pft_param.dat" )
+    write_parameter_file ( "/tmp/standard_pft_param.dat", h, p, p_list )
+    fp = open( "/tmp/standard_pft_param.dat", 'r' )
+    new_file = fp.read()
+    fp.close()
+    fp = open( "/home/ucfajlg/JULES/JULES/jules-cvs/PARAM/standard_pft_param.dat", 'r' )
+    old_file = fp.read()
+    fp.close()
+
+    assert (new_file[0] == old_file[0]) and (new_file[1] == old_file[1])
+    
     
     

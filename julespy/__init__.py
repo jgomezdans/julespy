@@ -52,7 +52,7 @@ def do_parameter_file ( parameter_file ):
     fin.close()
     return ( header_names, parameters, parameter_list )
 
-def write_parameter_file ( fname, header, parameters ):
+def write_parameter_file ( fname, header, parameters, parameter_list ):
     """
     A function to write JULES parameter files out. These files are made up of
 
@@ -62,10 +62,15 @@ def write_parameter_file ( fname, header, parameters ):
     4. Some random stuff preceded by a #
     """
     f_out = open ( fname, 'w' )
-    header_txt = "".join( [ "'%s'"%h for h in header ] )
-    header_txt + " ! pftName \n"
+    header_txt =  ",".join( [ "%7s"%str("'%s'"%h) for h in header ] )
+    header_txt += "    !  pftName \n"
     f_out.write ( header_txt )
-    #for ( param_name, param_vals ) in parameters.itervalues():
+    for p in parameter_list:
+        p_txt = ", ".join( [ str("%6.2f"%h) for h in parameters[p] ] )
+        p_txt += ("     !  %s\n"%p)
+        f_out.write ( p_txt )
+    f_out.write ("# A nice file written out by the julespy system!")
+    f_out.close()
         
 
 ######class julespy:
