@@ -25,6 +25,7 @@ def do_parameter_file ( parameter_file ):
     header_names = [ i.lstrip ().rstrip().lstrip("'").rstrip("'") \
                         for i in read_line.split(",") ]
     parameters = {}
+    parameter_list = []
     while True:
         read_line = fin.readline()
         if not read_line:
@@ -37,6 +38,10 @@ def do_parameter_file ( parameter_file ):
             continue
         for i in par_vals.split(","):
             try:
+                parameter_list.index ( par_name.lstrip().rstrip() )
+            except:
+                parameter_list.append ( par_name.lstrip().rstrip() )
+            try:
                 parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
                      float(i.lstrip ().rstrip().lstrip("'").rstrip("'") ))
             except ValueError:
@@ -45,13 +50,23 @@ def do_parameter_file ( parameter_file ):
                     float( int(\
                         i.lstrip ().rstrip().lstrip("'").rstrip("'") ) ))
     fin.close()
-    
-    return ( header_names, parameters )
+    return ( header_names, parameters, parameter_list )
 
-#def write_parameter_file ( fname, header, parameters ):
-    #"""
-    #A function to wri
-    #"""
+def write_parameter_file ( fname, header, parameters ):
+    """
+    A function to write JULES parameter files out. These files are made up of
+
+    1. A header with eg PFT names running across the top
+    2. The values under each header
+    3. A fortran comment synbol (!) and the parameter name
+    4. Some random stuff preceded by a #
+    """
+    f_out = open ( fname, 'w' )
+    header_txt = "".join( [ "'%s'"%h for h in header ] )
+    header_txt + " ! pftName \n"
+    f_out.write ( header_txt )
+    #for ( param_name, param_vals ) in parameters.itervalues():
+        
 
 ######class julespy:
     ######"""
