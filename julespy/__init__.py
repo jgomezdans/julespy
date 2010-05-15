@@ -189,9 +189,6 @@ class julespy:
         pft_fd, pft_path = tempfile.mkstemp()
         trifid_fd, trifid_path = tempfile.mkstemp()
         nonveg_fd, nonveg_path = tempfile.mkstemp()
-        print pft_path
-        print trifid_path
-        print nonveg_path
         # Save parameters to these files
         write_parameter_file ( pft_path, self.pft_names, \
                 self.pft_parameters, self.pft_para_list  )
