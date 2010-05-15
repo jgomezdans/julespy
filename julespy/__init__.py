@@ -41,14 +41,14 @@ def do_parameter_file ( parameter_file ):
                 parameter_list.index ( par_name.lstrip().rstrip() )
             except:
                 parameter_list.append ( par_name.lstrip().rstrip() )
-            try:
-                parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
+ ###           try:
+            parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
                      float(i.lstrip ().rstrip().lstrip("'").rstrip("'") ))
-            except ValueError:
-                #Groan...
-                parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
-                    float( int(\
-                        i.lstrip ().rstrip().lstrip("'").rstrip("'") ) ))
+            #except ValueError:
+                ##Groan...
+                #parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
+                    #float( int(\
+                        #i.lstrip ().rstrip().lstrip("'").rstrip("'") ) ))
     fin.close()
     return ( header_names, parameters, parameter_list )
 
@@ -73,50 +73,55 @@ def write_parameter_file ( fname, header, parameters, parameter_list ):
     f_out.close()
         
 
-######class julespy:
-    ######"""
-    ######A class to call JULES, varying stuff like PFT parameters and the like.
-    ######"""
-    ######def __init__ ( self, jules_infile = "./point_looblos.jin", \
-                         ######jules_outfile = "./OUTPUT/loobos.tstep.30m.asc", \
-                         ######jules_cmd = "./jules.exe", \
-                         ######pft_params_file = "standard_pft_param.dat", \
-                         ######standard_nonveg_params_file = \
-                                        ######"standard_nonveg_param.dat", \
-                         ######standard_trif_params_file = \
-                                        ######"standard_trif_param.dat" ):
+class julespy:
+    """
+    A class to call JULES, varying stuff like PFT parameters and the like.
+    """
+    def __init__ ( self, jules_infile = "point_loobos_example.jin", \
+                         jules_outfile = "OUTPUT/loobos.tstep.30m.asc", \
+                         jules_cmd = "jules.exe", \
+                         pft_params_file = "standard_pft_param.dat", \
+                         nonveg_params_file = \
+                                        "standard_nonveg_param.dat", \
+                         trif_params_file = \
+                                        "standard_trif_param.dat" ):
+        if not os.environ.has_key ( "JULES_DIR" ):
+            raise  RuntimeError, "You need to set the JULES_DIR " + \
+                                 "environment variable"
+        else:
+            self.jules_dir = os.environ['JULES_DIR']
+            
+        if os.path.exists ( os.path.join( self.jules_dir, jules_cmd) ):
+            self.jules_cmd = os.path.join( self.jules_dir, jules_cmd)
+        else:
+            raise IOError, "No JULES executable in %s" % \
+                            (os.path.join( self.jules_dir, jules_cmd))
 
- 
-        ######if os.path.exists ( jules_comd ):
-            ######self.jules_cmd = jules_cmd
-        ######else:
-            ######print "No JULES executable in %s"%jules_cmd
-            ######sys.exit(-1)
+        if os.path.exists ( os.path.join( self.jules_dir, jules_infile) ):
+            self.jules_infile = os.path.join ( self.jules_dir, jules_infile )
+        else:
+            raise IOError, "JULES infile (jin) %s doesn't seem to exist" % \
+                            (os.path.join( self.jules_dir, jules_infile))
 
-        ######if os.path.exists ( jules_infile ):
-            ######self.jules_infile = jules_infile
-        ######else:
-            ######print "JULES infile (jin) %s doens't seem to exist"%jules_infile
-            ######sys.exit(-1)
+        self.jules_outfile = jules_outfile
+        # Read JULES parameter files
+        ( self.pft_names, self.pft_parameters, self.pft_para_list ) = \
+            do_parameter_file ( pft_params_file )
 
-        ######self.jules_outfile = jules_outfile
+        ( self.nonveg_names, self.nonveg_parameters, \
+                self.nonveg_para_list ) = \
+                do_parameter_file ( nonveg_params_file )
 
-        ######self._get_parameters ( self, pft_params_file, \
-                                     ######standard_nonveg_params_file, \
-                                     ######standard_trif_params_file )
+        ( self.trif_names, self.trif_parameters, self.trif_para_list ) = \
+            do_parameter_file ( trif_params_file )
 
-    ######def _get_parameters ( self, pft_params_file, standard_nonveg_params_file, \
-                                ######standard_trif_params_file ):
-        ######"""
-        ######This method gets the parameter values in dictionaries for easy
-        ######manipulation.
-        ######"""
-        ####### First, PFT parameter files
-
-    
-    ######def update_pft_parameters ( self, parameter_list, parameter_vals ):
-        ######print "there"
-
-######if __name__ == "__main__":
-    ######print "here"
-    
+    def modify_pft_params ( self, param, pft, new_val ):
+        if (type ( param ) == list):
+            if type(new_val) != list :
+                raise TypeError, "new_val has to be a list if param is a list."
+            if len(new_val) != len(param):
+                raise ValueError, "new_val must have the same length as param"
+            for (i, p) in enumerate( param ):
+                self.pft_parameters[p][self.pft_names.index(pft)] = new_val[i]
+        else:
+            self.pft_parameters[param][self.pft_names.index(pft)] = new_val

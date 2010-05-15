@@ -31,8 +31,37 @@ def test_write_parameter_file ():
     fp = open( "/home/ucfajlg/JULES/JULES/jules-cvs/PARAM/standard_pft_param.dat", 'r' )
     old_file = fp.read()
     fp.close()
-
     assert (new_file[0] == old_file[0]) and (new_file[1] == old_file[1])
-    
-    
-    
+
+def test_julespy_init():
+    j = julespy( )
+
+@raises(IOError)
+def test_julespy_init_jules_exe():
+    J = julespy( jules_cmd="/asrb")
+
+@raises(IOError)
+def test_julespy_init_jules_jin():
+    J = julespy( jules_infile="/asrb" )
+
+def test_julespy_modify_pft_params ( ):
+    jules = julespy()
+    jules.modify_pft_params ( 'lai', 'BT', 23 )
+    assert jules.pft_parameters['lai'][0] == 23
+
+def test_julespy_modify_pft_params_list ( ):
+    jules = julespy()
+    jules.modify_pft_params ( ['lai', 'c3'], 'BT', [23,24] )
+    assert (jules.pft_parameters['lai'][0] == 23) and \
+           (jules.pft_parameters['lai'][0] == 24)
+
+@raises (TypeError)           
+def test_julespy_modify_pft_params_list1 ( ):
+               jules = julespy()
+               jules.modify_pft_params ( ['lai', 'c3'], 'BT', 23 )
+
+@raises (ValueError)
+def test_julespy_modify_pft_params_list2 ( ):
+                   jules = julespy()
+                   jules.modify_pft_params ( ['lai', 'c3'], 'BT', [23] )
+                   
