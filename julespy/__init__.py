@@ -20,29 +20,38 @@ def do_parameter_file ( parameter_file ):
     """
     if not os.path.exists ( parameter_file ):
         raise IOError, "Input file doesn't exist!"
-    fp = open ( parameter_file, 'r' )
-    L = fp.readline().strip().split("!")[0]
+    fin = open ( parameter_file, 'r' )
+    read_line = fin.readline().strip().split("!")[0]
     header_names = [ i.lstrip ().rstrip().lstrip("'").rstrip("'") \
-                        for i in L.split(",") ]
+                        for i in read_line.split(",") ]
     parameters = {}
     while True:
-        L = fp.readline()
-        if not L: break
-        if L[0]=="#": continue
+        read_line = fin.readline()
+        if not read_line:
+            break
+        if read_line[0] == "#":
+            continue
         try:
-            [par_vals, par_name ] = L.strip("\n").split("!")
+            [par_vals, par_name ] = read_line.strip("\n").split("!")
         except ValueError:
             continue
         for i in par_vals.split(","):
             try:
-                parameters[ par_name.lstrip().rstrip() ] = \
-                     float(i.lstrip ().rstrip().lstrip("'").rstrip("'") )
-            except:
+                parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
+                     float(i.lstrip ().rstrip().lstrip("'").rstrip("'") ))
+            except ValueError:
                 #Groan...
-                parameters[ par_name.lstrip().rstrip() ] = \
-                    float( int(i.lstrip ().rstrip().lstrip("'").rstrip("'") ) )
-    fp.close()
+                parameters.setdefault( par_name.lstrip().rstrip(), []).append(\
+                    float( int(\
+                        i.lstrip ().rstrip().lstrip("'").rstrip("'") ) ))
+    fin.close()
+    
     return ( header_names, parameters )
+
+#def write_parameter_file ( fname, header, parameters ):
+    #"""
+    #A function to wri
+    #"""
 
 ######class julespy:
     ######"""
