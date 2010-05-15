@@ -115,7 +115,16 @@ class julespy:
         ( self.trif_names, self.trif_parameters, self.trif_para_list ) = \
             do_parameter_file ( trif_params_file )
 
-    def modify_pft_params ( self, param, pft, new_val ):
+    def modify_params ( self, ptype, param, pft, new_val ):
+        if ptype.tolower() == "pft":
+            paramset = self.pft_parameters
+        elif ptype.tolower() == "trifid":
+            paramset = self.trifid_parameters
+        elif ptype.tolower() == "nonveg":
+            paramset = self.nonveg_parameters
+        else:
+            raise ValueError, "ptype has to be either 'pft', " + \
+                              "'trifid' or 'nonveg'"
         if (type ( param ) == list):
             if type(new_val) != list :
                 raise TypeError, "new_val has to be a list if param is a list."
