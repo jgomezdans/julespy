@@ -159,7 +159,7 @@ class julespy:
             paramset = self.pft_parameters
             paramlist = self.pft_names
         elif ptype.lower() == "trifid":
-            paramset = self.trifid_parameters
+            paramset = self.trif_parameters
             paramlist = self.trif_names
         elif ptype.lower() == "nonveg":
             paramset = self.nonveg_parameters
@@ -221,7 +221,7 @@ class julespy:
         os.remove ( pft_path )
         os.remove ( nonveg_path )
         os.remove ( trifid_path )
-        
+
         return output
 
 

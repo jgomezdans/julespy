@@ -48,7 +48,24 @@ def test_julespy_modify_pft_params ( ):
     jules = julespy()
     jules.modify_params ( "pft",'lai', 'BT', 23 )
     assert jules.pft_parameters['lai'][0] == 23
+    
+def test_julespy_modify_pft_params2 ( ):
+    jules = julespy()
+    jules.modify_params ( "nonveg",'gs_nvg', 'urban', 23 )
+    assert jules.nonveg_parameters['gs_nvg'][0] == 23
 
+
+def test_julespy_modify_pft_params3 ( ):
+    jules = julespy()
+    jules.modify_params ( "trifid",'lai_max', 'BT', 23 )
+    assert jules.trif_parameters['lai_max'][0] == 23
+    
+@raises (ValueError)
+def test_julespy_modify_pft_params3 ( ):
+    jules = julespy()
+    jules.modify_params ( "urg",'lai_max', 'BT', 23 )
+    
+    
 def test_julespy_modify_params_list ( ):
     jules = julespy()
     jules.modify_params ( "pft", ['lai', 'c3'], 'BT', [23,24] )
@@ -64,4 +81,13 @@ def test_julespy_modify_params_list1 ( ):
 def test_julespy_modify_params_list2 ( ):
                    jules = julespy()
                    jules.modify_params ( "pft", ['lai', 'c3'], 'BT', [23] )
-                   
+
+##def test_julespy_call_jules():
+    ##jules = julespy()
+    ##output = jules.call_jules()
+    ##assert output.find("End")>=0
+
+def test_process_jules_output():
+    output = process_jules_output (\
+        "/home/ucfajlg/JULES/JULES/jules-cvs/OUTPUT/loobos.p2.01d.asc")
+    assert type(output) == dict
