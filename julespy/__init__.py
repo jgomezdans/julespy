@@ -116,12 +116,15 @@ class julespy:
             do_parameter_file ( trif_params_file )
 
     def modify_params ( self, ptype, param, pft, new_val ):
-        if ptype.tolower() == "pft":
+        if ptype.lower() == "pft":
             paramset = self.pft_parameters
-        elif ptype.tolower() == "trifid":
+            paramlist = self.pft_names
+        elif ptype.lower() == "trifid":
             paramset = self.trifid_parameters
-        elif ptype.tolower() == "nonveg":
+            paramlist = self.tri_names
+        elif ptype.lower() == "nonveg":
             paramset = self.nonveg_parameters
+            paramlist = self.nonveg_names
         else:
             raise ValueError, "ptype has to be either 'pft', " + \
                               "'trifid' or 'nonveg'"
@@ -131,6 +134,6 @@ class julespy:
             if len(new_val) != len(param):
                 raise ValueError, "new_val must have the same length as param"
             for (i, p) in enumerate( param ):
-                self.pft_parameters[p][self.pft_names.index(pft)] = new_val[i]
+                paramset[p][paramlist.index(pft)] = new_val[i]
         else:
-            self.pft_parameters[param][self.pft_names.index(pft)] = new_val
+            paramset[param][paramlist.index(pft)] = new_val

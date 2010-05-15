@@ -46,14 +46,14 @@ def test_julespy_init_jules_jin():
 
 def test_julespy_modify_pft_params ( ):
     jules = julespy()
-    jules.modify_pft_params ( "pft",'lai', 'BT', 23 )
+    jules.modify_params ( "pft",'lai', 'BT', 23 )
     assert jules.pft_parameters['lai'][0] == 23
 
 def test_julespy_modify_params_list ( ):
     jules = julespy()
     jules.modify_params ( "pft", ['lai', 'c3'], 'BT', [23,24] )
     assert (jules.pft_parameters['lai'][0] == 23) and \
-           (jules.pft_parameters['lai'][0] == 24)
+           (jules.pft_parameters['c3'][0] == 24)
 
 @raises (TypeError)           
 def test_julespy_modify_params_list1 ( ):
