@@ -11,6 +11,40 @@ Heavily based on MdeKauwe's version.
 import os
 import sys
 
+def process_jules_output ( fname ):
+    import numpy
+    var_dict = {}
+    output = {}
+    with open( fname,'r') as jules_out:
+        while True:
+            read_line = jules_out.readline()
+            if not read_line:
+                break
+
+            if (read_line.find("S")==0) or (read_line.find("M")==0) or \
+                                        (read_line.find("A")==0)  :
+                # First, get variable names and number of levels
+                split_string = read_line.split()
+                var_dict[ split_string[2].strip() ] = \
+                            numpy.zeros((int(split_string[1])))
+                print "Variable: ", split_string[2]
+            elif read_line.find ("timestep")==0:
+                #Aaaahhh, a timestep!
+                # Get the timestep
+                split_string = read_line.split()
+                tstep = ''.join(split_string[-2:])
+                #Empty dictionary for this timestep
+                output[tstep] = var_dict
+                # For each variable
+                for var in var_dict.iterkeys():
+                    #How many labels for this variable?
+                    for i in xrange(var_dict[var].shape[0]):
+                        # Read value and store
+                        read_line = jules_out.readline().strip()
+                        output[tstep][var][i] = float(read_line)
+
+    return output
+
 def do_parameter_file ( parameter_file ):
     """
     A function to read and process JULES parameter files. The output
@@ -77,8 +111,7 @@ class julespy:
     """
     A class to call JULES, varying stuff like PFT parameters and the like.
     """
-    def __init__ ( self, jules_infile = "point_loobos_example.jin", \
-                         jules_outfile = "OUTPUT/loobos.tstep.30m.asc", \
+    def __init__ ( self, jules_infile = "point_loobos.jin", \
                          jules_cmd = "jules.exe", \
                          pft_params_file = "standard_pft_param.dat", \
                          nonveg_params_file = \
@@ -103,7 +136,6 @@ class julespy:
             raise IOError, "JULES infile (jin) %s doesn't seem to exist" % \
                             (os.path.join( self.jules_dir, jules_infile))
 
-        self.jules_outfile = jules_outfile
         # Read JULES parameter files
         ( self.pft_names, self.pft_parameters, self.pft_para_list ) = \
             do_parameter_file ( pft_params_file )
@@ -116,12 +148,19 @@ class julespy:
             do_parameter_file ( trif_params_file )
 
     def modify_params ( self, ptype, param, pft, new_val ):
+        """
+        A method to modify parameters. Given that parameters are either
+        pft, trifid or non-vegetation parameters, this has to be specified
+        in the ptype argument. Then, the parameter (or parameters, stick them
+        on a list), the pft to which they apply, and the actual value (or
+        values if you have a list).
+        """
         if ptype.lower() == "pft":
             paramset = self.pft_parameters
             paramlist = self.pft_names
         elif ptype.lower() == "trifid":
             paramset = self.trifid_parameters
-            paramlist = self.tri_names
+            paramlist = self.trif_names
         elif ptype.lower() == "nonveg":
             paramset = self.nonveg_parameters
             paramlist = self.nonveg_names
@@ -137,3 +176,52 @@ class julespy:
                 paramset[p][paramlist.index(pft)] = new_val[i]
         else:
             paramset[param][paramlist.index(pft)] = new_val
+
+    def call_jules ( self ):
+        """
+        Call JULES
+        """
+        from subprocess import Popen, PIPE, STDOUT
+        import tempfile
+        
+        
+        # Create the PFT, TRIFID and NONVEG temporary files
+        pft_fd, pft_path = tempfile.mkstemp()
+        trifid_fd, trifid_path = tempfile.mkstemp()
+        nonveg_fd, nonveg_path = tempfile.mkstemp()
+        print pft_path
+        print trifid_path
+        print nonveg_path
+        # Save parameters to these files
+        write_parameter_file ( pft_path, self.pft_names, \
+                self.pft_parameters, self.pft_para_list  )
+        write_parameter_file ( trifid_path, self.trif_names, \
+                self.trif_parameters, self.trif_para_list )
+        write_parameter_file ( nonveg_path, self.nonveg_names, \
+                self.nonveg_parameters, self.nonveg_para_list )
+        # Now, read the file
+        fp = open( self.jules_infile, 'r' )
+        jules_jin = fp.read()
+        fp.close()
+
+        # Modify the locations of temporary files
+        jules_jin.replace( "**PFTPARAMETERS**", pft_path )
+        jules_jin.replace( "**NONVEGPARAMETERS**", nonveg_path )
+        jules_jin.replace ( "**TRIFIDPARAMETERS**", trifid_path )
+
+        # Launch JULES with new parametrisation
+        # Pass jules_jin as stdin, and pipe stderr and stdout to
+        # a python variable.
+        cmd_line = "" + self.jules_cmd
+        p = Popen ( cmd_line, stdout=PIPE, stdin=PIPE, stderr=STDOUT )
+        p.stdin.write( jules_jin )
+        output = p.communicate()[0]
+        p.stdin.close()
+        # Remove temporary files
+        os.remove ( pft_path )
+        os.remove ( nonveg_path )
+        os.remove ( trifid_path )
+        
+        return output
+
+
