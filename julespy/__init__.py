@@ -13,6 +13,7 @@ import sys
 
 def process_jules_output ( fname ):
     import numpy
+    from copy import deepcopy
     var_dict = {}
     output = {}
     with open( fname,'r') as jules_out:
@@ -34,7 +35,7 @@ def process_jules_output ( fname ):
                 split_string = read_line.split()
                 tstep = ''.join(split_string[-2:])
                 #Empty dictionary for this timestep
-                output[tstep] = var_dict
+                output[tstep] = deepcopy( var_dict )
                 # For each variable
                 for var in var_dict.iterkeys():
                     #How many labels for this variable?
@@ -42,6 +43,8 @@ def process_jules_output ( fname ):
                         # Read value and store
                         read_line = jules_out.readline().strip()
                         output[tstep][var][i] = float(read_line)
+                        if var=="tstar":
+                            print tstep, var, i, float(read_line)- output[tstep][var][i]
 
     return output
 
