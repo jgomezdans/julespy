@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
+
 Interface with JULES.
+---------------------
 
-Build a JULES infile, run JULES and get the return the output.
-
-Heavily based on MdeKauwe's version.
+The module provides a wrapper to easily call the JULES model.
 """
 
 import os
@@ -17,6 +17,8 @@ def process_jules_output ( fname ):
     timestep. The output is a dictionary, with the timestep as keys (this 
     probably needs some clever work to make it easier to find stuff), and 
     a subsequent dictionary with the parameters.
+
+    :param fname: The filename of the JULES output file that will be processed.
     """
     import numpy
     from copy import deepcopy
@@ -58,6 +60,8 @@ def do_parameter_file ( parameter_file ):
     is a list with the headers (usually, PFTs or non-vegetated surface types)
     and a dictionary, with the parameter names as keys, and a dictionary of
     parameter values stored in the same order as the headers.
+
+    :param parameter_file: The JULES parameter file
     """
     if not os.path.exists ( parameter_file ):
         raise IOError, "Input file doesn't exist!"

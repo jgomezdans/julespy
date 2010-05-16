@@ -61,7 +61,7 @@ def test_julespy_modify_pft_params3 ( ):
     assert jules.trif_parameters['lai_max'][0] == 23
     
 @raises (ValueError)
-def test_julespy_modify_pft_params3 ( ):
+def test_julespy_modify_pft_params4 ( ):
     jules = julespy()
     jules.modify_params ( "urg",'lai_max', 'BT', 23 )
     
@@ -82,10 +82,10 @@ def test_julespy_modify_params_list2 ( ):
                    jules = julespy()
                    jules.modify_params ( "pft", ['lai', 'c3'], 'BT', [23] )
 
-##def test_julespy_call_jules():
-    ##jules = julespy()
-    ##output = jules.call_jules()
-    ##assert output.find("End")>=0
+def test_julespy_call_jules():
+    jules = julespy()
+    output = jules.call_jules()
+    assert output.find("End")>=0
 
 def test_process_jules_output():
     output = process_jules_output (\
