@@ -205,9 +205,12 @@ class julespy:
         fp.close()
 
         # Modify the locations of temporary files
-        jules_jin.replace( "**PFTPARAMETERS**", pft_path )
-        jules_jin.replace( "**NONVEGPARAMETERS**", nonveg_path )
-        jules_jin.replace ( "**TRIFIDPARAMETERS**", trifid_path )
+        jules_jin = jules_jin.replace( "**PFTPARAMETERS**", \
+                                        "%s"%pft_path )
+        jules_jin = jules_jin.replace( "**NONVEGPARAMETERS**", \
+                                        "%s"%nonveg_path )
+        jules_jin = jules_jin.replace ( "**TRIFIDPARAMETERS**", \
+                                        "%s"%trifid_path )
 
         # Launch JULES with new parametrisation
         # Pass jules_jin as stdin, and pipe stderr and stdout to
@@ -221,7 +224,6 @@ class julespy:
         os.remove ( pft_path )
         os.remove ( nonveg_path )
         os.remove ( trifid_path )
-
         return output
 
 
