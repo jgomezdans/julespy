@@ -37,10 +37,8 @@ def PreparePlotsParams ():
 PreparePlotsParams()
 # Start by reading some JULES output file, and processing it
 
-p2=process_jules_output ("../../../OUTPUT/loobos.p1.30m.asc")
+(dates, p2 ) = process_jules_output ("../../../OUTPUT/loobos.p1.30m.asc")
 
-# Extract the dates
-dates = numpy.array(p2.keys())
 
 # Extract a few variables, such as
 # * tstar
@@ -52,27 +50,18 @@ tstar = numpy.array( [ p2[i]["tstar"] for i in dates])
 canopy = numpy.array( [ p2[i]["canopy"] for i in dates])
 latentHeat = numpy.array( [ p2[i]["latentHeat"] for i in dates])
 lsRain = numpy.array( [ p2[i]["lsRain"] for i in dates])
-
+tstar = tstar-273.15
 # Now, convert dates into pylab numeric epoch
 
 dates = pylab.datestr2num ( dates )
 
-# Sort dates
-i = numpy.argsort ( dates )
-dates = dates[i]
-
-#Order the other arrays
-tstar = tstar[i]
-canopy = canopy[i]
-latentHeat = latentHeat[i]
-lsRain = lsRain[i]
-
+dates.sort()
 # Give us a figure
 fig = pylab.figure()
 var_list = [ tstar, canopy, latentHeat, lsRain ]
 for (i, variable) in enumerate ( ['tstar', 'canopy', 'latentHeat', 'lsRain']):
     ax = fig.add_subplot(4, 1, i+1)
-    ax.plot_date ( dates, var_list[i], '-', label=r'%s'%variable)
+    ax.plot_date ( dates, var_list[i], 'k,', label=r'%s'%variable)
     ax.legend (loc="upper left", fancybox=True, shadow=True )
     monthsLoc = matplotlib.dates.MonthLocator()
     ax.xaxis.set_major_locator( monthsLoc )

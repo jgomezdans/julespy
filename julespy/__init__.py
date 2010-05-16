@@ -26,6 +26,9 @@ def process_jules_output ( fname ):
     import time
     var_dict = {}
     output = {}
+    timesteps = []
+    variable_list = []
+    tstar = []
     with open( fname,'r') as jules_out:
         while True:
             read_line = jules_out.readline()
@@ -36,6 +39,7 @@ def process_jules_output ( fname ):
                                         (read_line.find("A")==0)  :
                 # First, get variable names and number of levels
                 split_string = read_line.split()
+                variable_list.append ( split_string[2].strip() )
                 var_dict[ split_string[2].strip() ] = \
                             numpy.zeros((int(split_string[1])))
                 #print "Variable: ", split_string[2]
@@ -52,15 +56,16 @@ def process_jules_output ( fname ):
                 tstep = tstep.strftime( "%d/%m/%Y %H:%M:%S" )
                 #Empty dictionary for this timestep
                 output[tstep] = deepcopy( var_dict )
+                timesteps.append ( tstep )
                 # For each variable
-                for var in var_dict.iterkeys():
+                for var in variable_list: #var_dict.iterkeys():
                     #How many labels for this variable?
                     for i in xrange(var_dict[var].shape[0]):
                         # Read value and store
                         read_line = jules_out.readline().strip()
                         output[tstep][var][i] = float(read_line)
 
-    return output
+    return (timesteps, output)
 
 def do_parameter_file ( parameter_file ):
     """
