@@ -206,7 +206,11 @@ class julespy:
 
     def call_jules ( self ):
         """
-        Calls JULES
+        Calls JULES, creating a JIN file that points to parameter
+        files created on the run. The output of the model is saved
+        in some text files that is specifid in the JIN file
+
+        TODO Provide the ability to change drivers
         """
         from subprocess import Popen, PIPE, STDOUT
         import tempfile
