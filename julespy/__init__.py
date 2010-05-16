@@ -174,13 +174,11 @@ class julespy:
         on a list), the pft to which they apply, and the actual value (or
         values if you have a list).
 
-        :param ptype: The type of parameter. For this version, this can either be
-        * ``pft``
-        * ``nonveg``
-        * ``trifid``
+        :param ptype: The type of parameter. For this version, this can either be ``pft``, ``nonveg`` or ``trifid``.
         :param param: Parameter name (or names if this is a list)
         :param pft: PFT to which the changes will be applied to.
         :param new_val: New value, or values if a list. If it is a list, make sure that the order is the same as in param.
+        
         """
         if ptype.lower() == "pft":
             paramset = self.pft_parameters
