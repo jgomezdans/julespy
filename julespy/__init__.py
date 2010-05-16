@@ -9,9 +9,15 @@ Heavily based on MdeKauwe's version.
 """
 
 import os
-import sys
 
 def process_jules_output ( fname ):
+    """
+    A function to process JULES output files. It reads the text files, bagging
+    all the parameter names (and levels), and collects the data for each 
+    timestep. The output is a dictionary, with the timestep as keys (this 
+    probably needs some clever work to make it easier to find stuff), and 
+    a subsequent dictionary with the parameters.
+    """
     import numpy
     from copy import deepcopy
     var_dict = {}
@@ -43,8 +49,6 @@ def process_jules_output ( fname ):
                         # Read value and store
                         read_line = jules_out.readline().strip()
                         output[tstep][var][i] = float(read_line)
-                        if var=="tstar":
-                            print tstep, var, i, float(read_line)- output[tstep][var][i]
 
     return output
 
@@ -200,9 +204,9 @@ class julespy:
         write_parameter_file ( nonveg_path, self.nonveg_names, \
                 self.nonveg_parameters, self.nonveg_para_list )
         # Now, read the file
-        fp = open( self.jules_infile, 'r' )
-        jules_jin = fp.read()
-        fp.close()
+        file_in = open( self.jules_infile, 'r' )
+        jules_jin = file_in.read()
+        file_in.close()
 
         # Modify the locations of temporary files
         jules_jin = jules_jin.replace( "**PFTPARAMETERS**", \
