@@ -1,3 +1,4 @@
+hmmm
 JULESpy
 =======
 
@@ -8,7 +9,7 @@ Authors
 -------
 
 * J Gomez-Dans
-* M de Kauwe
+* M De Kauwe
 
 Usage
 -----
@@ -19,7 +20,7 @@ Quite simple, really...
 License
 -------
 
-Copyright (c) 2010  J Gomez-Dans, M de Kauwe
+Copyright (c) 2010  J Gomez-Dans, M De Kauwe
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

@@ -169,12 +169,12 @@ class julespy:
     def modify_params ( self, ptype, param, pft, new_val ):
         """
         A method to modify parameters. Given that parameters are either
-        pft, trifid or non-vegetation parameters, this has to be specified
+        pft, triffid or non-vegetation parameters, this has to be specified
         in the ptype argument. Then, the parameter (or parameters, stick them
         on a list), the pft to which they apply, and the actual value (or
         values if you have a list).
 
-        :param ptype: The type of parameter. For this version, this can either be ``pft``, ``nonveg`` or ``trifid``.
+        :param ptype: The type of parameter. For this version, this can either be ``pft``, ``nonveg`` or ``triffid``.
         :param param: Parameter name (or names if this is a list)
         :param pft: PFT to which the changes will be applied to.
         :param new_val: New value, or values if a list. If it is a list, make sure that the order is the same as in param.
@@ -183,7 +183,7 @@ class julespy:
         if ptype.lower() == "pft":
             paramset = self.pft_parameters
             paramlist = self.pft_names
-        elif ptype.lower() == "trifid":
+        elif ptype.lower() == "triffid":
             paramset = self.trif_parameters
             paramlist = self.trif_names
         elif ptype.lower() == "nonveg":
@@ -191,7 +191,7 @@ class julespy:
             paramlist = self.nonveg_names
         else:
             raise ValueError, "ptype has to be either 'pft', " + \
-                              "'trifid' or 'nonveg'"
+                              "'triffid' or 'nonveg'"
         if (type ( param ) == list):
             if type(new_val) != list :
                 raise TypeError, "new_val has to be a list if param is a list."
@@ -214,14 +214,14 @@ class julespy:
         import tempfile
         
         
-        # Create the PFT, TRIFID and NONVEG temporary files
+        # Create the PFT, triffid and NONVEG temporary files
         pft_fd, pft_path = tempfile.mkstemp()
-        trifid_fd, trifid_path = tempfile.mkstemp()
+        triffid_fd, triffid_path = tempfile.mkstemp()
         nonveg_fd, nonveg_path = tempfile.mkstemp()
         # Save parameters to these files
         write_parameter_file ( pft_path, self.pft_names, \
                 self.pft_parameters, self.pft_para_list  )
-        write_parameter_file ( trifid_path, self.trif_names, \
+        write_parameter_file ( triffid_path, self.trif_names, \
                 self.trif_parameters, self.trif_para_list )
         write_parameter_file ( nonveg_path, self.nonveg_names, \
                 self.nonveg_parameters, self.nonveg_para_list )
@@ -235,8 +235,8 @@ class julespy:
                                         "%s"%pft_path )
         jules_jin = jules_jin.replace( "**NONVEGPARAMETERS**", \
                                         "%s"%nonveg_path )
-        jules_jin = jules_jin.replace ( "**TRIFIDPARAMETERS**", \
-                                        "%s"%trifid_path )
+        jules_jin = jules_jin.replace ( "**triffidPARAMETERS**", \
+                                        "%s"%triffid_path )
 
         # Launch JULES with new parametrisation
         # Pass jules_jin as stdin, and pipe stderr and stdout to
@@ -249,7 +249,27 @@ class julespy:
         # Remove temporary files
         os.remove ( pft_path )
         os.remove ( nonveg_path )
-        os.remove ( trifid_path )
+        os.remove ( triffid_path )
         return output
 
+    def returnJulesState( self, locations_dict={"TSTAR":"1"}):
+		"""
+        To do...
+        Need to return the jules output to the MH code for the likelihood func
+        
+        This is my old version which clearly needs adjusting. its a bit complicated
+        I guess by the need to jump around the timesteps tag and the ordering is 
+        based entirely on the var setup in the input file
+        """
+        
+        fileString = np.zeros(0)
+		for line in open(self.jules_out, 'r'):
+			line = line.strip().split(" ")
+			fileString = np.append(fileString, line[0])
+			
+		tstar = np.zeros(0)
+		for i in xrange(len(fileString)):
+			if fileString[i] == 'timestep:':
+				tstar = np.append(tstar, np.float32(fileString[i+int(locations_dict['TSTAR'])]))
+		return tstar
 
