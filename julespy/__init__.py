@@ -105,6 +105,11 @@ def write_parameter_file ( fname, header, parameters, parameter_list ):
     2. The values under each header
     3. A fortran comment synbol (!) and the parameter name
     4. Some random stuff preceded by a #
+
+    :param fname: The parameter filename.
+    :param header: A list with the parameter headers in order
+    :param parameters: The parameters dictionary. Each entry is a list with the value for each header.
+    :param parameter_list: A list with the order of the parameters in the file. Not sure this is actually needed...
     """
     f_out = open ( fname, 'w' )
     header_txt =  ",".join( [ "%7s"%str("'%s'"%h) for h in header ] )
@@ -129,6 +134,9 @@ class julespy:
                                         "standard_nonveg_param.dat", \
                          trif_params_file = \
                                         "standard_trif_param.dat" ):
+        """
+        The constructor.
+        """
         if not os.environ.has_key ( "JULES_DIR" ):
             raise  RuntimeError, "You need to set the JULES_DIR " + \
                                  "environment variable"
@@ -165,6 +173,14 @@ class julespy:
         in the ptype argument. Then, the parameter (or parameters, stick them
         on a list), the pft to which they apply, and the actual value (or
         values if you have a list).
+
+        :param ptype: The type of parameter. For this version, this can either be
+        * ``pft``
+        * ``nonveg``
+        * ``trifid``
+        :param param: Parameter name (or names if this is a list)
+        :param pft: PFT to which the changes will be applied to.
+        :param new_val: New value, or values if a list. If it is a list, make sure that the order is the same as in param.
         """
         if ptype.lower() == "pft":
             paramset = self.pft_parameters
