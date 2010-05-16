@@ -19,7 +19,7 @@ Quite simple, really...
 License
 -------
 
-Copyright (c) 2010 Michel Martens
+Copyright (c) 2010  J Gomez-Dans, M de Kauwe
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
