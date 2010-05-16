@@ -206,7 +206,7 @@ class julespy:
 
     def call_jules ( self ):
         """
-        Call JULES
+        Calls JULES
         """
         from subprocess import Popen, PIPE, STDOUT
         import tempfile
