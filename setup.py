@@ -10,7 +10,7 @@ setup(name='julespy',
 This code is a wrapper to the JULES land surface model. The main aims is to have easy access to parameters, drivers and model output from python.""",
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
-      author='Jose Gomez-Dans',
+      author='Jose Gomez-Dans and Martin de Kauwe',
       author_email='j.gomez-dans@geog.ucl.ac.uk',
       url='',
       license='',
