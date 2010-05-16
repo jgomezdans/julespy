@@ -252,24 +252,3 @@ class julespy:
         os.remove ( triffid_path )
         return output
 
-    def returnJulesState( self, locations_dict={"TSTAR":"1"}):
-		"""
-        To do...
-        Need to return the jules output to the MH code for the likelihood func
-        
-        This is my old version which clearly needs adjusting. its a bit complicated
-        I guess by the need to jump around the timesteps tag and the ordering is 
-        based entirely on the var setup in the input file
-        """
-        
-        fileString = np.zeros(0)
-		for line in open(self.jules_out, 'r'):
-			line = line.strip().split(" ")
-			fileString = np.append(fileString, line[0])
-			
-		tstar = np.zeros(0)
-		for i in xrange(len(fileString)):
-			if fileString[i] == 'timestep:':
-				tstar = np.append(tstar, np.float32(fileString[i+int(locations_dict['TSTAR'])]))
-		return tstar
-
