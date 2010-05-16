@@ -11,6 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   julespy.rst
+
 Indices and tables
 ==================
 
