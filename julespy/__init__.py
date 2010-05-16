@@ -38,7 +38,7 @@ def process_jules_output ( fname ):
                 split_string = read_line.split()
                 var_dict[ split_string[2].strip() ] = \
                             numpy.zeros((int(split_string[1])))
-                print "Variable: ", split_string[2]
+                #print "Variable: ", split_string[2]
             elif read_line.find ("timestep")==0:
                 #Aaaahhh, a timestep!
                 # Get the timestep
