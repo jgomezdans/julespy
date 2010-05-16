@@ -22,6 +22,8 @@ def process_jules_output ( fname ):
     """
     import numpy
     from copy import deepcopy
+    import datetime
+    import time
     var_dict = {}
     output = {}
     with open( fname,'r') as jules_out:
@@ -41,7 +43,13 @@ def process_jules_output ( fname ):
                 #Aaaahhh, a timestep!
                 # Get the timestep
                 split_string = read_line.split()
-                tstep = ''.join(split_string[-2:])
+                time_day = datetime.timedelta( seconds = \
+                                            float(split_string[-1]) )
+                tod = time.strptime( split_string[-2].strip(), "%Y%m%d" )
+                start_day = datetime.datetime(tod.tm_year, tod.tm_mon, \
+                        tod.tm_mday, 0, 0, 0 )
+                tstep = start_day + time_day
+                tstep = tstep.strftime( "%d/%m/%Y %H:%M:%S" )
                 #Empty dictionary for this timestep
                 output[tstep] = deepcopy( var_dict )
                 # For each variable
@@ -131,9 +139,9 @@ class julespy:
                          jules_cmd = "jules.exe", \
                          pft_params_file = "standard_pft_param.dat", \
                          nonveg_params_file = \
-                                        "standard_nonveg_param.dat", \
+                         "standard_nonveg_param.dat", \
                          trif_params_file = \
-                                        "standard_trif_param.dat" ):
+                         "standard_trif_param.dat" ):
         """
         The constructor.
         """
