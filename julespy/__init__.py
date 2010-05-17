@@ -28,7 +28,6 @@ def process_jules_output ( fname ):
     output = {}
     timesteps = []
     variable_list = []
-    tstar = []
     with open( fname,'r') as jules_out:
         while True:
             read_line = jules_out.readline()
@@ -128,9 +127,9 @@ def write_parameter_file ( fname, header, parameters, parameter_list ):
     header_txt =  ",".join( [ "%7s"%str("'%s'"%h) for h in header ] )
     header_txt += "    !  pftName \n"
     f_out.write ( header_txt )
-    for p in parameter_list:
-        p_txt = ", ".join( [ str("%6.2f"%h) for h in parameters[p] ] )
-        p_txt += ("     !  %s\n"%p)
+    for para in parameter_list:
+        p_txt = ", ".join( [ str("%6.2f"%h) for h in parameters[para] ] )
+        p_txt += ("     !  %s\n"%para)
         f_out.write ( p_txt )
     f_out.write ("# A nice file written out by the julespy system!")
     f_out.close()
@@ -210,8 +209,8 @@ class julespy:
                 raise TypeError, "new_val has to be a list if param is a list."
             if len(new_val) != len(param):
                 raise ValueError, "new_val must have the same length as param"
-            for (i, p) in enumerate( param ):
-                paramset[p][paramlist.index(pft)] = new_val[i]
+            for (i, para) in enumerate( param ):
+                paramset[para][paramlist.index(pft)] = new_val[i]
         else:
             paramset[param][paramlist.index(pft)] = new_val
 
@@ -255,10 +254,10 @@ class julespy:
         # Pass jules_jin as stdin, and pipe stderr and stdout to
         # a python variable.
         cmd_line = "" + self.jules_cmd
-        p = Popen ( cmd_line, stdout=PIPE, stdin=PIPE, stderr=STDOUT )
-        p.stdin.write( jules_jin )
-        output = p.communicate()[0]
-        p.stdin.close()
+        pipe = Popen ( cmd_line, stdout=PIPE, stdin=PIPE, stderr=STDOUT )
+        pipe.stdin.write( jules_jin )
+        output = pipe.communicate()[0]
+        pipe.stdin.close()
         # Remove temporary files
         os.remove ( pft_path )
         os.remove ( nonveg_path )
