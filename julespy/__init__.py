@@ -66,6 +66,27 @@ def process_jules_output ( fname ):
 
     return (timesteps, output)
 
+def do_misc_parameter_file(parameter_file):
+    """
+    A function to read and process JULES misc parameter files that have to be
+    read via the column, most annoying. The output is a list with the headers 
+    (usually, PFTs or non-vegetated surface types) and a dictionary, with the 
+    parameter names as keys, and a dictionary of parameter values stored in 
+    the same order as the headers.
+
+    :param parameter_file: The JULES parameter file
+    """
+    header_names = []
+    parameter_list = []
+    parameters = {}
+    f = open(parameter_file, 'r')
+    for line in f:
+        header_names.append(line.strip("\n").split("!")[1].strip("' '"))
+        parameter_list.append(line.strip("\n").split("!")[1].strip("' '"))
+        parameters.setdefault(line.strip("\n").split("!")[1].strip("' '"), [float(line.strip("\n").split("!")[0].strip("' '"))])
+    
+    return (header_names, parameters, parameter_list)
+
 def do_parameter_file ( parameter_file ):
     """
     A function to read and process JULES parameter files. The output
@@ -180,11 +201,11 @@ class julespy:
         ( self.trif_names, self.trif_parameters, self.trif_para_list ) = \
             do_parameter_file ( trif_params_file )
         
-        ( self.frac_names, self.frac_parameters, self.frac_para_list ) = \
-            do_parameter_file ( frac_params_file )            
+        (self.frac_names, self.frac_parameters, self.frac_para_list) = \
+            do_misc_parameter_file(frac_params_file)            
 
     def modify_params ( self, ptype, param, pft, new_val ):
-        """
+        """2
         A method to modify parameters. Given that parameters are either
         pft, triffid or non-vegetation parameters, this has to be specified
         in the ptype argument. Then, the parameter (or parameters, stick them
@@ -268,9 +289,7 @@ class julespy:
         # a python variable.
         cmd_line = "" + self.jules_cmd
         pipe = Popen ( cmd_line, stdout=PIPE, stdin=PIPE, stderr=STDOUT )
-        print jules_jin
         pipe.stdin.write( jules_jin )
-        print jules_jin
         output = pipe.communicate()[0]
         pipe.stdin.close()
         # Remove temporary files
