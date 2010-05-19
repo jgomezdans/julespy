@@ -145,7 +145,9 @@ class julespy:
                          nonveg_params_file = \
                          "standard_nonveg_param.dat", \
                          trif_params_file = \
-                         "standard_trif_param.dat" ):
+                         "standard_trif_param.dat",\
+                         frac_params_file = \
+                         "frac.dat" ):
         """
         The constructor.
         """
@@ -177,6 +179,9 @@ class julespy:
 
         ( self.trif_names, self.trif_parameters, self.trif_para_list ) = \
             do_parameter_file ( trif_params_file )
+        
+        ( self.frac_names, self.frac_parameters, self.frac_para_list ) = \
+            do_parameter_file ( frac_params_file )            
 
     def modify_params ( self, ptype, param, pft, new_val ):
         """
@@ -201,9 +206,12 @@ class julespy:
         elif ptype.lower() == "nonveg":
             paramset = self.nonveg_parameters
             paramlist = self.nonveg_names
+        elif ptype.lower() == "frac":
+            paramset = self.frac_parameters
+            paramlist = self.frac_names    
         else:
             raise ValueError, "ptype has to be either 'pft', " + \
-                              "'triffid' or 'nonveg'"
+                              "'triffid', 'nonveg' or 'frac'"
         if (type ( param ) == list):
             if type(new_val) != list :
                 raise TypeError, "new_val has to be a list if param is a list."
@@ -230,6 +238,7 @@ class julespy:
         pft_fd, pft_path = tempfile.mkstemp()
         triffid_fd, triffid_path = tempfile.mkstemp()
         nonveg_fd, nonveg_path = tempfile.mkstemp()
+        frac_fd, frac_path = tempfile.mkstemp()
         # Save parameters to these files
         write_parameter_file ( pft_path, self.pft_names, \
                 self.pft_parameters, self.pft_para_list  )
@@ -237,6 +246,8 @@ class julespy:
                 self.trif_parameters, self.trif_para_list )
         write_parameter_file ( nonveg_path, self.nonveg_names, \
                 self.nonveg_parameters, self.nonveg_para_list )
+        write_parameter_file ( frac_path, self.frac_names, \
+                self.frac_parameters, self.frac_para_list )        
         # Now, read the file
         file_in = open( self.jules_infile, 'r' )
         jules_jin = file_in.read()
@@ -249,18 +260,23 @@ class julespy:
                                         "%s"%nonveg_path )
         jules_jin = jules_jin.replace ( "**triffidPARAMETERS**", \
                                         "%s"%triffid_path )
+        jules_jin = jules_jin.replace ( "**FRACPARAMETERS**", \
+                                        "%s"%frac_path )                                        
 
         # Launch JULES with new parametrisation
         # Pass jules_jin as stdin, and pipe stderr and stdout to
         # a python variable.
         cmd_line = "" + self.jules_cmd
         pipe = Popen ( cmd_line, stdout=PIPE, stdin=PIPE, stderr=STDOUT )
+        print jules_jin
         pipe.stdin.write( jules_jin )
+        print jules_jin
         output = pipe.communicate()[0]
         pipe.stdin.close()
         # Remove temporary files
         os.remove ( pft_path )
         os.remove ( nonveg_path )
         os.remove ( triffid_path )
+        os.remove ( frac_path )
         return output
 
